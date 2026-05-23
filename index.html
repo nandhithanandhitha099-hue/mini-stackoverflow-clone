@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>StackOverflow Clone</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #f1f2f3;
+      padding: 20px;
+    }
+
+    h1 {
+      color: orange;
+    }
+
+    input {
+      padding: 10px;
+      width: 300px;
+    }
+
+    button {
+      padding: 10px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    #output {
+      margin-top: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    p {
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Mini StackOverflow</h1>
+
+  <input type="text" id="questionInput" placeholder="Enter question">
+
+  <button onclick="addQuestion()">Add Question</button>
+
+  <button onclick="loadPosts()">Load Questions</button>
+
+  <div id="output"></div>
+
+  <script>
+    async function loadPosts() {
+      let res = await fetch("http://localhost:5000/api/posts");
+
+      let data = await res.json();
+
+      let output = "";
+
+      data.forEach(post => {
+        output += `
+  <p>
+    ${post.title}
+
+    <button onclick="deletePost('${post._id}')">
+      Delete
+    </button>
+  </p>
+`;
+      });
+
+      document.getElementById("output").innerHTML = output;
+    }
+
+    async function addQuestion() {
+      let question =
+        document.getElementById("questionInput").value;
+
+      await fetch("http://localhost:5000/api/createuser", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          title: question
+        })
+      });
+
+      alert("Question Added");
+    }
+    async function deletePost(id) {
+
+  await fetch("http://localhost:5000/api/posts/" + id, {
+    method: "DELETE"
+  });
+
+  loadPosts();
+}
+  </script>
+
+</body>
+
+</html>
